@@ -19,7 +19,7 @@ func (k Keeper) BurnEdenBFromElysUnstaking(ctx sdk.Context, delegator sdk.AccAdd
 	}
 
 	// Calculate current delegated amount of delegator
-	delAmount := k.CalcDelegationAmount(ctx, delegator)
+	delAmount := k.CalcDelegationAmount(ctx, delAddr)
 
 	// If not unstaked,
 	// should return nil otherwise it will break staking module
@@ -50,12 +50,9 @@ func (k Keeper) BurnEdenBFromElysUnstaking(ctx sdk.Context, delegator sdk.AccAdd
 	}
 
 	// Burn EdenB in commitment module
-	cacheCtx, write := ctx.CacheContext()
-	err := k.commKeeper.BurnEdenBoost(cacheCtx, delAddr, ptypes.EdenB, edenBToBurn.TruncateInt())
+	err := k.commKeeper.BurnEdenBoost(ctx, delAddr, ptypes.EdenB, edenBToBurn.TruncateInt())
 	if err != nil {
 		k.Logger(ctx).Error("EdenB burn failure", err)
-	} else {
-		write()
 	}
 }
 

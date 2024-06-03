@@ -8,10 +8,17 @@ import (
 )
 
 // Calculate the delegated amount
-func (k Keeper) CalcDelegationAmount(ctx sdk.Context, delegator sdk.AccAddress) math.Int {
+func (k Keeper) CalcDelegationAmount(ctx sdk.Context, delegator string) math.Int {
+	// Derivate bech32 based delegator address
+	delAddr, err := sdk.AccAddressFromBech32(delegator)
+	if err != nil {
+		// This could be validator address
+		return sdk.ZeroInt()
+	}
+
 	// Get elys delegation
 	delAmount := sdk.ZeroDec()
-	delegations := k.Keeper.GetDelegatorDelegations(ctx, delegator, gomath.MaxUint16)
+	delegations := k.Keeper.GetDelegatorDelegations(ctx, delAddr, gomath.MaxUint16)
 	for _, del := range delegations {
 		valAddr := del.GetValidatorAddr()
 		val := k.Keeper.Validator(ctx, valAddr)
@@ -25,7 +32,14 @@ func (k Keeper) CalcDelegationAmount(ctx sdk.Context, delegator sdk.AccAddress) 
 }
 
 // Calculate delegation to bonded validators
-func (k Keeper) CalcBondedDelegationAmount(ctx sdk.Context, delAddr sdk.AccAddress) math.Int {
+func (k Keeper) CalcBondedDelegationAmount(ctx sdk.Context, delegator string) math.Int {
+	// Derivate bech32 based delegator address
+	delAddr, err := sdk.AccAddressFromBech32(delegator)
+	if err != nil {
+		// This could be validator address
+		return sdk.ZeroInt()
+	}
+
 	// Get elys delegation for creator address
 	delAmount := sdk.ZeroDec()
 	delegations := k.Keeper.GetDelegatorDelegations(ctx, delAddr, gomath.MaxUint16)
