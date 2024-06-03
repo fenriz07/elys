@@ -122,6 +122,6 @@ jobs:
           proposalid=$($ELYSD q tx $txhash --node $NODE | extract_proposal_id)
 
           # vote on proposal
-          $ELYSD tx gov vote $proposalid no --from=fuji $OPTIONS
-          $ELYSD tx gov vote $proposalid no --from=mallorca $OPTIONS
+          $ELYSD tx gov vote $proposalid yes --from=fuji $OPTIONS
+          $ELYSD tx gov vote $proposalid yes --from=mallorca $OPTIONS
           sleep 10
