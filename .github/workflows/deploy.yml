@@ -5,7 +5,7 @@ on:
       - devnet
 
 jobs:
-  Deploy:
+  deploy:
     runs-on: ubuntu-latest
     environment: devnet 
     env:
@@ -113,7 +113,7 @@ jobs:
               --upgrade-height=$height \
               --title="${{env.VERSION}}" \
               --description="Elys Network${{env.VERSION}} released. Focuses on enhancements and codebase improvements." \
-              --upgrade-info="{\"binaries\":{\"linux/amd64\":\"https://snapshots.elys.network/releases/${{env.NAME_WITH_VERSION}}.tar.gz\"}}" \
+              --upgrade-info="{\"binaries\":{\"linux/amd64\":\"https://github.com/elys-network/elys/releases/download/v0.31.0/elysd-v0.31.0-linux-amd64.tar.gz\"}}" \
               --no-validate \
               --from=mallorca \
               $OPTIONS | extract_txhash
