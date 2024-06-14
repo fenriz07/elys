@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - devnet
+      - 0.32.1
 jobs:
   deploy:
     runs-on: ubuntu-latest
