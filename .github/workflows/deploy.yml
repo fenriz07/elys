@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Setting variables
         run: |
-          VER=${{ github.sha }}
+          VER=v${{ github.sha }}
           echo "VERSION=$VER"    >> $GITHUB_ENV
           echo "BINARY=${NAME}d" >> $GITHUB_ENV
           echo "NAME_WITH_VERSION=${NAME}-${VER}" >> $GITHUB_ENV
