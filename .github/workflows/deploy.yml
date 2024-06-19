@@ -3,7 +3,7 @@ on:
   push:
     branches:
       - devnet
-      - 0.32.1
+      - 0.32.4
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -112,7 +112,7 @@ jobs:
               --deposit=10000000uelys \
               --upgrade-height=$height \
               --title="${{env.VERSION}}" \
-              --description="Elys Network${{env.VERSION}} released. Focuses on enhancements and codebase improvements." \
+              --description="Elys Network version ${{env.VERSION}} released. Focuses on enhancements and codebase improvements." \
               --upgrade-info="{\"binaries\":{\"linux/amd64\":\"https://snapshots.elys.network/releases/${{env.NAME_WITH_VERSION}}.tar.gz\"}}" \
               --no-validate \
               --from=mallorca \
@@ -127,7 +127,6 @@ jobs:
           #Proposal Id
           echo "Proposal Id:" $proposalid
 
-          exit 1
           # vote on proposal
           $ELYSD tx gov vote $proposalid yes --from=fuji $OPTIONS
           $ELYSD tx gov vote $proposalid yes --from=mallorca $OPTIONS
