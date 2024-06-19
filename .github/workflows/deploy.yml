@@ -119,9 +119,16 @@ jobs:
               $OPTIONS | extract_txhash
           )             
           sleep 10
+
+          #Tx Hash
+          echo "software upgrade tx hash:" $txhash
           proposalid=$($ELYSD q tx $txhash --node $NODE | extract_proposal_id)
 
+          #Proposal Id
+          echo "Proposal Id:" $proposalid
+
+          exit 1
           # vote on proposal
-          $ELYSD tx gov vote $proposalid yes --from=fuji $OPTIONS
-          $ELYSD tx gov vote $proposalid yes --from=mallorca $OPTIONS
+          $ELYSD tx gov vote $proposalid no --from=fuji $OPTIONS
+          $ELYSD tx gov vote $proposalid no --from=mallorca $OPTIONS
           sleep 10
