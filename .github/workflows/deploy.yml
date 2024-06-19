@@ -22,7 +22,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Setting variables
         run: |
-          VER=$(cat .version)
+          VER=${{ github.sha }}
           echo "VERSION=$VER"    >> $GITHUB_ENV
           echo "BINARY=${NAME}d" >> $GITHUB_ENV
           echo "NAME_WITH_VERSION=${NAME}-${VER}" >> $GITHUB_ENV
@@ -129,6 +129,6 @@ jobs:
 
           exit 1
           # vote on proposal
-          $ELYSD tx gov vote $proposalid no --from=fuji $OPTIONS
-          $ELYSD tx gov vote $proposalid no --from=mallorca $OPTIONS
+          $ELYSD tx gov vote $proposalid yes --from=fuji $OPTIONS
+          $ELYSD tx gov vote $proposalid yes --from=mallorca $OPTIONS
           sleep 10
