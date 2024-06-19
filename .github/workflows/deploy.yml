@@ -4,6 +4,7 @@ on:
     branches:
       - devnet
       - 0.32.4
+      - 0.32.5
 jobs:
   deploy:
     runs-on: ubuntu-latest
