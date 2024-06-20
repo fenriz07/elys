@@ -44,6 +44,7 @@ jobs:
       - name: Merge
         run: |
           cd elys
+          echo "ejecutando?"
           git fetch origin/develop
           echo "probando"
           git branch
