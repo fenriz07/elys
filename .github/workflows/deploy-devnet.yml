@@ -45,7 +45,9 @@ jobs:
         run: |
           cd elys
           git fetch origin develop
-          git merge origin/develop
+          git checkout develop
+          git checkout devnet
+          git merge develop
           git push --force devnet
       - name: Building elys binary
         env:
