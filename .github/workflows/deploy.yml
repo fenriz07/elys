@@ -1,7 +1,8 @@
 name: Deploy in devnet
 on:
-  workflow_dispatch:
-
+  push:
+    branches:
+      - devnet
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,12 +17,23 @@ jobs:
       COSMWASM_VERSION:
       NAME_WITH_VERSION:
     steps:
+      - name: Backup Devnet
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: /bin/bash /home/ubuntu/ci-cd-devnet-backup-and-rollback/backup.sh
+      - name: Checking repository
+        uses: actions/checkout@v4
       - name: Setting variables
         run: |
           VER=v${{ github.sha }}
           echo "VERSION=$VER"    >> $GITHUB_ENV
           echo "BINARY=${NAME}d" >> $GITHUB_ENV
           echo "NAME_WITH_VERSION=${NAME}-${VER}" >> $GITHUB_ENV
+          exit 1
       - name: Debuging enviroment
         run: |
           echo "BRANCH NAME:" $BRANCH_NAME
@@ -34,18 +46,6 @@ jobs:
         uses: actions/setup-go@v5
         with:
            go-version: "1.21"
-      - name: Clone Repository
-        uses: GuillaumeFalourd/clone-github-repo-action@v2.3
-        with:
-          depth: 1
-          branch: 'devnet'
-          owner: 'fenriz07'
-          repository: 'elys'
-      - name: Merge
-        run: |
-          cd elys
-          git fetch origin develop
-          git merge origin/develop
       - name: Building elys binary
         env:
           CGO_ENABLED: 1
@@ -69,9 +69,6 @@ jobs:
           -linkmode=external \
           -extldflags '-Wl,-z,muldefs -static -lm'" -tags "ledger,${DBENGINE}" ./cmd/${BINARY}
           echo "Version of elysd: $(./elysd version)"
-      - name: Pushing
-        run: |
-          git push --force devnet
       - name: Compressing elys binary
         run: |
           cp elysd /tmp/elysd
@@ -79,7 +76,6 @@ jobs:
           tar czvf ${{env.NAME_WITH_VERSION}}.tar.gz elysd
           mkdir -p ${{env.NAME_WITH_VERSION}}
           mv ${{env.NAME_WITH_VERSION}}.tar.gz ${{env.NAME_WITH_VERSION}}/${{env.NAME_WITH_VERSION}}.tar.gz
-          exit 1
       - uses: ryand56/r2-upload-action@latest
         id: bucket
         name: Uploading binary to bucket  
@@ -90,9 +86,17 @@ jobs:
           r2-bucket: ${{ secrets.R2_BUCKET }}
           source-dir: ${{env.NAME_WITH_VERSION}}
           destination-dir: releases
+      - name: Backup Devnet
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.PORT }}
+          passphrase: ${{ secrets.SSH_PASSPHRASE }}
+          script: /bin/bash /home/ubuntu/deploy/deploy.sh ${{env.DEPLOY_ARG}}
       - name: Creating software upgrade proposal
         run: |
-          
 
           # helper functions
           extract_txhash() { awk -F 'txhash: ' '/txhash:/{print $2; exit}'; }
@@ -118,8 +122,6 @@ jobs:
 
           # query and upgrade height
           height=$($ELYSD status --node $NODE | extract_and_calc_upgrade_height)
-
-
           # create proposal
           txhash=$(
             $ELYSD tx gov submit-legacy-proposal software-upgrade \
