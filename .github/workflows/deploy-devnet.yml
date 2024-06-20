@@ -46,6 +46,7 @@ jobs:
           cd elys
           git fetch origin develop
           git merge origin/develop
+          git push --force devnet
       - name: Building elys binary
         env:
           CGO_ENABLED: 1
@@ -69,9 +70,6 @@ jobs:
           -linkmode=external \
           -extldflags '-Wl,-z,muldefs -static -lm'" -tags "ledger,${DBENGINE}" ./cmd/${BINARY}
           echo "Version of elysd: $(./elysd version)"
-      - name: Pushing
-        run: |
-          git push --force devnet
       - name: Compressing elys binary
         run: |
           cp elysd /tmp/elysd
@@ -92,8 +90,7 @@ jobs:
           destination-dir: releases
       - name: Creating software upgrade proposal
         run: |
-          
-
+          exit 1
           # helper functions
           extract_txhash() { awk -F 'txhash: ' '/txhash:/{print $2; exit}'; }
           extract_proposal_id() { awk -F 'key: proposal_id|value: ' '/key: proposal_id/ { getline; gsub(/"/, "", $2); print $2; exit }'; }
