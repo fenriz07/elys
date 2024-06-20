@@ -40,7 +40,7 @@ jobs:
 
       - name: Merge develop branch
         run: | 
-          git fecth origin devnet
+          git fetch origin devnet
           git checkout devnet
           git merge develop
       
