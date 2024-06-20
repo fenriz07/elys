@@ -41,12 +41,15 @@ jobs:
           branch: 'devnet'
           owner: 'fenriz07'
           repository: 'elys'
+      - name: Merge
+        run: |
+          cd elys
+          git merge develop
+          git push --force devnet
       - name: Building elys binary
         env:
           CGO_ENABLED: 1
         run: |
-          cd elys
-          ls -la
           echo Building elysd binary
 
           COSMWASM_VERSION=$(go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
