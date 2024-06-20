@@ -45,7 +45,7 @@ jobs:
         run: |
           cd elys
           git fetch origin develop
-          git merge develop
+          git merge origin/develop
       - name: Building elys binary
         env:
           CGO_ENABLED: 1
