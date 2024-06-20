@@ -35,12 +35,14 @@ jobs:
         with:
            go-version: "1.21"
 
-      - name: Merge
-        run: |
-          git clone git@github.com:fenriz07/elys.git
-          cd elys
+      - name: Checking repository
+        uses: actions/checkout@v4
+
+      - name: Merge develop branch
+        run: | 
           git checkout devnet
-          ls
+          git merge develop
+      
       - name: Building elys binary
         env:
           CGO_ENABLED: 1
