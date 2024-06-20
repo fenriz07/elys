@@ -44,7 +44,7 @@ jobs:
       - name: Merge
         run: |
           cd elys
-          git fetch
+          git fetch origin develop
           git merge develop
       - name: Building elys binary
         env:
