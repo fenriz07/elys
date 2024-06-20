@@ -44,7 +44,7 @@ jobs:
       - name: Merge
         run: |
           cd elys
-          git fetch origin/develop develop
+          git fetch origin/develop
           echo "probando"
           git branch
           echo "probando2"
