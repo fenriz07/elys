@@ -45,7 +45,7 @@ jobs:
         run: |
           cd elys
           echo "ejecutando?"
-          git fetch origin/develop
+          git fetch origin develop
           echo "probando"
           git branch
           echo "probando2"
