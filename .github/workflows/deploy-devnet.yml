@@ -16,8 +16,6 @@ jobs:
       COSMWASM_VERSION:
       NAME_WITH_VERSION:
     steps:
-      - name: Checking repository
-        uses: actions/checkout@v4
       - name: Setting variables
         run: |
           VER=v${{ github.sha }}
@@ -36,11 +34,22 @@ jobs:
         uses: actions/setup-go@v5
         with:
            go-version: "1.21"
+      - name: Clone Repository
+        uses: GuillaumeFalourd/clone-github-repo-action@v2.3
+        with:
+          depth: 1
+          branch: 'devnet'
+          owner: 'fenriz07'
+          repository: 'elys'
+      - name: Merge
+        run: |
+          cd elys
+          git fetch origin develop
+          git merge origin/develop
       - name: Building elys binary
         env:
           CGO_ENABLED: 1
         run: |
-          exit 1
           echo Building elysd binary
 
           COSMWASM_VERSION=$(go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
@@ -60,6 +69,9 @@ jobs:
           -linkmode=external \
           -extldflags '-Wl,-z,muldefs -static -lm'" -tags "ledger,${DBENGINE}" ./cmd/${BINARY}
           echo "Version of elysd: $(./elysd version)"
+      - name: Pushing
+        run: |
+          git push --force devnet
       - name: Compressing elys binary
         run: |
           cp elysd /tmp/elysd
@@ -67,6 +79,7 @@ jobs:
           tar czvf ${{env.NAME_WITH_VERSION}}.tar.gz elysd
           mkdir -p ${{env.NAME_WITH_VERSION}}
           mv ${{env.NAME_WITH_VERSION}}.tar.gz ${{env.NAME_WITH_VERSION}}/${{env.NAME_WITH_VERSION}}.tar.gz
+          exit 1
       - uses: ryand56/r2-upload-action@latest
         id: bucket
         name: Uploading binary to bucket  
@@ -79,6 +92,7 @@ jobs:
           destination-dir: releases
       - name: Creating software upgrade proposal
         run: |
+          
 
           # helper functions
           extract_txhash() { awk -F 'txhash: ' '/txhash:/{print $2; exit}'; }
@@ -105,7 +119,6 @@ jobs:
           # query and upgrade height
           height=$($ELYSD status --node $NODE | extract_and_calc_upgrade_height)
 
-          exit 1
 
           # create proposal
           txhash=$(
