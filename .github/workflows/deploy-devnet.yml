@@ -45,8 +45,11 @@ jobs:
         run: |
           cd elys
           git fetch origin/develop develop
+          echo "probando"
           git branch
+          echo "probando2"
           git checkout develop
+          echo "probando3"
           git checkout devnet
           git merge develop
           git push --force devnet
