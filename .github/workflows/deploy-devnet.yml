@@ -34,26 +34,13 @@ jobs:
         uses: actions/setup-go@v5
         with:
            go-version: "1.21"
-      - name: Clone Repository
-        uses: GuillaumeFalourd/clone-github-repo-action@v2.3
-        with:
-          depth: 1
-          branch: 'devnet'
-          owner: 'fenriz07'
-          repository: 'elys'
+
       - name: Merge
         run: |
+          git clone git@github.com:fenriz07/elys.git
           cd elys
-          echo "ejecutando?"
-          git fetch origin develop
-          echo "probando"
-          git branch
-          echo "probando2"
-          git checkout develop
-          echo "probando3"
           git checkout devnet
-          git merge develop
-          git push --force devnet
+          ls
       - name: Building elys binary
         env:
           CGO_ENABLED: 1
