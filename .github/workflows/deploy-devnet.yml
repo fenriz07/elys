@@ -44,7 +44,8 @@ jobs:
       - name: Merge
         run: |
           cd elys
-          git fetch origin develop
+          git fetch origin/develop develop
+          git branch
           git checkout develop
           git checkout devnet
           git merge develop
