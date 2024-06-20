@@ -1,10 +1,7 @@
 name: Deploy in devnet
 on:
-  push:
-    branches:
-      - devnet
-      - 0.32.4
-      - 0.32.5
+  workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -43,6 +40,7 @@ jobs:
         env:
           CGO_ENABLED: 1
         run: |
+          exit 1
           echo Building elysd binary
 
           COSMWASM_VERSION=$(go list -m github.com/CosmWasm/wasmvm | sed 's/.* //')
@@ -106,6 +104,9 @@ jobs:
 
           # query and upgrade height
           height=$($ELYSD status --node $NODE | extract_and_calc_upgrade_height)
+
+          exit 1
+
           # create proposal
           txhash=$(
             $ELYSD tx gov submit-legacy-proposal software-upgrade \
