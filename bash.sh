@@ -3,17 +3,17 @@
 ##KEEEPERS MODULES
 
 declare -A allow_coverages
-allow_coverages["ACCOUNTEDPOOL"]= ${{vars.ACCOUNTEDPOOL}}
+allow_coverages["ACCOUNTEDPOOL"]= "30"
 
-echo "Searching for keeper packages:"
-find . -type d -path "*/x/*/keeper" -not -path "*/vendor/*"
+echo "Searching for types packages:"
+find . -type d -path "*/x/*/types" -not -path "*/vendor/*"
 
-module_packages=$(find . -type d -path "*/x/*/keeper" -not -path "*/vendor/*")
+module_packages=$(find . -type d -path "*/x/*/types" -not -path "*/vendor/*")
 for module in $module_packages; do
-echo "Checking keeper package: $module"
+echo "Checking types package: $module"
 module_coverage=$(go tool cover -func=coverage.txt | grep "$module" | awk '{sum += $3; count++} END {if (count > 0) print sum / count; else print 0}')
 if [ -n "$module_coverage" ]; then
-    module_name=$(echo "$module" | sed 's:^.*/\([^/]*\)/keeper$:\1:')
+    module_name=$(echo "$module" | sed 's:^.*/\([^/]*\)/types$:\1:')
     module_name=$(echo "$module_name" | tr '[:lower:]' '[:upper:]')
     allow_coverage=${allow_coverages[$module_name]}
 
